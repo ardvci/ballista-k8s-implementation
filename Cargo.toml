@@ -1,0 +1,21 @@
+[package]
+name = "rusty-cloud"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "data-gen"
+path = "src/bin/data_generator.rs"
+
+[[bin]]
+name = "run"
+path = "src/bin/run_query.rs"
+
+[dependencies]
+ballista = { version = "51.0.0" }
+datafusion = { version = "51.0.0" }
+tokio = { version = "1.0", features = ["full"] }
+anyhow = "1.0"
+arrow = "57.3.0"
+parquet = "57.3.0"
+rand = "0.9.2"

@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "ballista.fullname" . }}-test-connection"
+  labels:
+    {{- include "ballista.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  containers:
+    - name: connectivity-check
+      image: busybox:latest
+      command: ['sh', '-c']
+      args:
+        - |
+          echo "Checking Scheduler UI (HTTP)..."
+          wget -qO- http://{{ include "ballista.fullname" . }}-scheduler:{{ .Values.scheduler.uiPort }} | grep -q "Ballista"
+          UI_STATUS=$?
+
+          echo "Checking Scheduler gRPC Port (TCP)..."
+          nc -z -v {{ include "ballista.fullname" . }}-scheduler {{ .Values.scheduler.port }}
+          GRPC_STATUS=$?
+
+          if [ $UI_STATUS -eq 0 ] && [ $GRPC_STATUS -eq 0 ]; then
+            echo "Successfully connected to Ballista Scheduler."
+            exit 0
+          else
+            echo "Connection failed. UI Status: $UI_STATUS, gRPC Status: $GRPC_STATUS"
+            exit 1
+          fi
+  restart_policy: Never

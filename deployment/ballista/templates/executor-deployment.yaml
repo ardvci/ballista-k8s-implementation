@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ballista.fullname" . }}-executor
+spec:
+  replicas: {{ .Values.executor.replicaCount }}
+  selector:
+    matchLabels:
+      app: ballista-executor
+  template:
+    metadata:
+      labels:
+        app: ballista-executor
+        ballista-cluster: {{ .Values.clusterName }}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: ballista-executor
+          image: "{{ .Values.image.repository }}/ballista-executor:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.executor.port }}
+              name: flight
+            - containerPort: 50052
+              name: grpc
+          args:
+            {{- range .Values.executor.args }}
+            - {{ . | quote }}
+              {{- end }}
+          env:
+            {{- if .Values.executor.env }}
+            {{- toYaml .Values.executor.env | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.executor.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /mnt
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "ballista.fullname" . }}-pvc

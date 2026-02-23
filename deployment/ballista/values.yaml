@@ -1,0 +1,50 @@
+clusterName: ballista-cluster
+
+image:
+  repository: ballista-local
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+scheduler:
+  replicaCount: 1
+  port: 50050
+  uiPort: 80
+  args:
+    - "--bind-host=0.0.0.0"
+    - "--bind-port=50050"
+    - "--external-host=ballista-cluster-scheduler"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
+executor:
+  replicaCount: 2
+  port: 50051
+  resources:
+    requests:
+      cpu: "1"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+  args:
+    - "--bind-port=50051"
+    - "--bind-grpc-port=50052"
+    - "--scheduler-host=ballista-cluster-scheduler"
+    - "--scheduler-port=50050"
+  env:
+    - name: BALLISTA_SCHEDULER_HOST
+      value: "ballista-cluster-scheduler"
+    - name: BALLISTA_SCHEDULER_PORT
+      value: "50050"
+    - name: RUST_LOG
+      value: "info"
+
+storage:
+  capacity: 20Gi
+  accessMode: ReadWriteOnce
+  hostPath: "/mnt"
