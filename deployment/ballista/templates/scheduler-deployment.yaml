@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ballista.fullname" . }}-scheduler
+  labels:
+    app: ballista-scheduler
+spec:
+  replicas: {{ .Values.scheduler.replicaCount }}
+  selector:
+    matchLabels:
+      app: ballista-scheduler
+  template:
+    metadata:
+      labels:
+        app: ballista-scheduler
+        ballista-cluster: {{ .Values.clusterName }}
+    spec:
+      containers:
+        - name: ballista-scheduler
+          image: "{{ .Values.image.repository }}/ballista-scheduler:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            {{- range .Values.scheduler.args }}
+            - {{ . | quote }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.scheduler.port }}
+              name: flight
+          resources:
+            {{- toYaml .Values.scheduler.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /mnt
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "ballista.fullname" . }}-pvc

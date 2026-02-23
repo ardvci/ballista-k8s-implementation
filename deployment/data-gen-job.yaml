@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ballista-data-generator
+spec:
+  template:
+    spec:
+      containers:
+        - name: data-gen
+          image: ballista-tools:v1
+          imagePullPolicy: Never
+          command: ["data-gen"]
+          volumeMounts:
+            - name: data-storage
+              mountPath: /mnt
+      volumes:
+        - name: data-storage
+          persistentVolumeClaim:
+            claimName: ballista-cluster-pvc
+      restartPolicy: Never

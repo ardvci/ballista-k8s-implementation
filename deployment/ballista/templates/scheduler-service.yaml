@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ballista.fullname" . }}-scheduler
+spec:
+  ports:
+    - port: {{ .Values.scheduler.port }}
+      name: scheduler
+    - port: {{ .Values.scheduler.uiPort }}
+      targetPort: 80
+      name: scheduler-ui
+  selector:
+    app: ballista-scheduler
