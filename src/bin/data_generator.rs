@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         println!("Generating file: {}", file_path);
 
-        for batch_idx in 0..(rows_per_file / batch_size) {
+        for _batch_idx in 0..(rows_per_file / batch_size) {
             let mut timestamps = Vec::with_capacity(batch_size);
             let mut user_ids = Vec::with_capacity(batch_size);
             let mut response_times = Vec::with_capacity(batch_size);

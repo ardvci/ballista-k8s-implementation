@@ -6,7 +6,7 @@ REPO_URL="https://github.com/apache/datafusion-ballista.git"
 TARGET_DIR="deployment/datafusion-ballista"
 DOCKER_REGISTRY="ballista-local"
 
-echo "[1/8] Depo klonlanıyor: $REPO_URL"
+echo "[1/8] Repo is cloning: $REPO_URL"
 if [ ! -d "$TARGET_DIR" ]; then
     git clone "$REPO_URL" "$TARGET_DIR"
 else
