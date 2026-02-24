@@ -18,11 +18,11 @@ cd "$TARGET_DIR"
 ./dev/build-ballista-docker.sh
 cd - > /dev/null
 
-echo "[4/8] Action: Building Custom Rust Tools (Data-Gen & Query-Runner)"
+echo "[3/8] Action: Building Custom Rust Tools (Data-Gen & Query-Runner)"
 docker tag apache/datafusion-ballista-scheduler:latest "$DOCKER_REGISTRY/ballista-scheduler:latest"
 docker tag apache/datafusion-ballista-executor:latest "$DOCKER_REGISTRY/ballista-executor:latest"
 
-echo "[4/5] Building Rust Bins: $TAG"
+echo "[4/8] Building Rust Bins: $TAG"
 docker build -t ballista-tools:v1 .
 
 echo "[5/8] Action: Deploying Ballista Cluster via Helm"
